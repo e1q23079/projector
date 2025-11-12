@@ -14,6 +14,8 @@ from kivy.uix.image import Image
 
 import socket
 
+from kivy.resources import resource_add_path
+
 is_processing = True
 data = None
 
@@ -43,6 +45,7 @@ Config.set("graphics","height","245")
 # Define the main application class
 class ProjectorApp(App):
         def build(self):
+            resource_add_path("data")
             self.kivy_img = Image(source="image.png")
             Clock.schedule_interval(self.update_image, 1.0 / 30.0)  # Update at 30 FPS
             return self.kivy_img
