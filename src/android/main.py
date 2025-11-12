@@ -43,11 +43,13 @@ Config.set("graphics","height","245")
 # Define the main application class
 class ProjectorApp(App):
         def build(self):
-            self.kivy_img = Image()
+            self.kivy_img = Image(source="image.png")
             Clock.schedule_interval(self.update_image, 1.0 / 30.0)  # Update at 30 FPS
             return self.kivy_img
         def update_image(self, dt):
             global data
+            if data is None:
+                return
             buf = io.BytesIO(data)
             core_image = CoreImage(buf, ext="png")
             self.kivy_img.texture = core_image.texture
