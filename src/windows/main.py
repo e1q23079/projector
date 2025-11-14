@@ -3,6 +3,7 @@ import cv2
 import pyautogui
 import numpy as np
 import struct
+import time
 
 # サーバーのホストとポート
 HOST = input("Enter server IP address: ")
@@ -18,16 +19,18 @@ try:
         # フレームのキャプチャ
         frame = pyautogui.screenshot() # 画面全体をキャプチャ
         frame = cv2.cvtColor(np.array(frame), cv2.COLOR_RGB2BGR)
-        # frame = cv2.resize(frame, (320, 240))   # 解像度を320x240にリサイズ
+        frame = cv2.resize(frame, (1280, 720))   # 解像度を1280x720にリサイズ
 
         # フレームのエンコード
-        _, buffer = cv2.imencode('.jpg', frame)
+        _, buffer = cv2.imencode('.jpg', frame,[cv2.IMWRITE_JPEG_QUALITY, 30])
         data = buffer.tobytes()
         
         # データの送信
         size = len(data) # フレームサイズ
         client.sendall(struct.pack(">I", size))  # フレームサイズを送信
         client.sendall(data)  # フレームデータを送信
+        time.sleep(0.1)  # 約30fpsで送信
+        
 finally:
     # クライアントソケットのクローズ
     client.close()
