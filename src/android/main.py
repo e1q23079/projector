@@ -13,12 +13,24 @@ from kivy.core.image import Image as CoreImage
 from kivy.uix.image import Image
 
 import socket
+import struct
 
 from kivy.resources import resource_add_path
 
 is_processing = True
 data = None
 
+# 指定サイズのデータを全て受信する関数
+def recv_all(sock, size):
+    buf = b""
+    while len(buf) < size:
+        packet = sock.recv(size - len(buf))
+        if not packet:
+            return None
+        buf += packet
+    return buf
+
+# クライアントの開始関数
 def start_client():
     global is_processing,data
 
@@ -26,17 +38,28 @@ def start_client():
     PORT = 5000
 
     # サーバーソケットの作成とバインド
-    client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    client.bind(("", PORT))
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.bind(("", PORT))
+    server.listen(1)
     print(f"client listening on port {PORT}...")
+    client, addr = server.accept()
+    print(f"Connection from {addr} has been established!")
 
     while is_processing:
         # データの受信
-        data, addr = client.recvfrom(65536)
+        recv_data = recv_all(client, 4) # フレームサイズを受信
+        if recv_data is None:
+            continue
+        size = struct.unpack(">I", recv_data)[0] # フレームサイズを取得
+        frame_data = recv_all(client, size) # フレームデータを受信
+        if frame_data is None:
+            continue
+        data = frame_data
 
-    # サーバーソケットのクローズ
+    # クライアントソケットのクローズ
     client.close()
-
+    # サーバーソケットのクローズ
+    server.close()
 
 # Set fixed window size for the application
 Config.set("graphics","width","435")
@@ -54,7 +77,7 @@ class ProjectorApp(App):
             if data is None:
                 return
             buf = io.BytesIO(data)
-            core_image = CoreImage(buf, ext="png")
+            core_image = CoreImage(buf, ext="jpg")
             self.kivy_img.texture = core_image.texture
         def on_stop(self):
             global is_processing
