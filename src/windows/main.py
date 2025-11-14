@@ -21,6 +21,8 @@ try:
         frame = cv2.cvtColor(np.array(frame), cv2.COLOR_RGB2BGR)
         frame = cv2.resize(frame, (1280, 720))   # 解像度を1280x720にリサイズ
 
+        frame = cv2.flip(frame, 0)  # 垂直反転
+
         # フレームのエンコード
         _, buffer = cv2.imencode('.jpg', frame,[cv2.IMWRITE_JPEG_QUALITY, 30])
         data = buffer.tobytes()
