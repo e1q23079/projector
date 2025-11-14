@@ -4,7 +4,7 @@ import pyautogui
 import numpy as np
 
 # サーバーのホストとポート
-HOST = "127.0.0.1"
+HOST = input("Enter server IP address: ")
 PORT = 5000
 
 # クライアントソケットの作成
