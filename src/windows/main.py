@@ -19,9 +19,10 @@ try:
         # フレームのキャプチャ
         frame = pyautogui.screenshot() # 画面全体をキャプチャ
         frame = cv2.cvtColor(np.array(frame), cv2.COLOR_RGB2BGR)
-        frame = cv2.resize(frame, (1280, 720))   # 解像度を1280x720にリサイズ
+        frame = cv2.resize(frame, (854, 480))   # 解像度を854x480にリサイズ | 1280x720
 
         frame = cv2.flip(frame, 0)  # 垂直反転
+        # frame = cv2.convertScaleAbs(frame, alpha=1.5, beta=10)  # 明るさ調整
 
         # フレームのエンコード
         _, buffer = cv2.imencode('.jpg', frame,[cv2.IMWRITE_JPEG_QUALITY, 30])
