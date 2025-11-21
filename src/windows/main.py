@@ -1,6 +1,6 @@
 import socket
 import cv2
-import pyautogui
+from mss import mss
 import numpy as np
 import struct
 import time
@@ -17,8 +17,9 @@ client.connect((HOST, PORT))
 try:
     while True:
         # フレームのキャプチャ
-        frame = pyautogui.screenshot() # 画面全体をキャプチャ
-        frame = cv2.cvtColor(np.array(frame), cv2.COLOR_RGB2BGR)
+        monitor = mss().monitors[1]  # プライマリモニターを選択
+        frame = mss().grab(monitor) # 画面全体をキャプチャ
+        frame = cv2.cvtColor(np.array(frame), cv2.COLOR_BGRA2BGR)
         frame = cv2.resize(frame, (854, 480))   # 解像度を854x480にリサイズ | 1280x720
 
         frame = cv2.flip(frame, 0)  # 垂直反転
