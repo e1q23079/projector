@@ -35,7 +35,8 @@ def on_button_click():
         # 切断処理
         button.config(text="接続")
         messagebox.showinfo(APP_TITLE, "切断しました。")
-        connected = False
+        connected = False # 接続状態を更新
+        combox.config(state="readonly")  # コンボボックスを有効化
         return
     # 接続先IPアドレスの入力ダイアログ表示
     input = simpledialog.askstring(APP_TITLE, "接続先のデバイスのIPアドレスを入力してください。")
@@ -48,7 +49,8 @@ def on_button_click():
     button.config(text="切断")
     # 情報メッセージの表示
     messagebox.showinfo(APP_TITLE, "接続しました。")
-    connected = True
+    combox.config(state="disabled")  # コンボボックスを無効化
+    connected = True # 接続状態を更新
 
 # ウィンドウ終了時の処理
 def on_exit():
