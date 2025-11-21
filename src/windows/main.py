@@ -33,7 +33,7 @@ IMAGE_QUALITIES = [
 def get_quality_names():
     names = []
     for image_quality in IMAGE_QUALITIES:
-        names.append(f"{image_quality['height']}p ({image_quality['width']}x{image_quality['height']})")
+        names.append(f"{image_quality['width']}p ({image_quality['width']}x{image_quality['height']})")
     return names
 
 # 状態
