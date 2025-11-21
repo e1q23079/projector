@@ -45,8 +45,9 @@ def disp(client,width:int,height:int):
     try:
         while connected:
             # フレームのキャプチャ
-            monitor = mss().monitors[1]  # プライマリモニターを選択
-            frame = mss().grab(monitor) # 画面全体をキャプチャ
+            with mss() as sct:
+                monitor = sct.monitors[1]  # プライマリモニターを選択
+                frame = sct.grab(monitor) # 画面全体をキャプチャ
             frame = cv2.cvtColor(np.array(frame), cv2.COLOR_BGRA2BGR)
             frame = cv2.resize(frame, (height, width))   # 解像度をheightxwidthにリサイズ
 
