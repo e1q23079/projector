@@ -2,6 +2,19 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import simpledialog
 from tkinter import messagebox
+import threading
+import socket
+import cv2
+from mss import mss
+import numpy as np
+import struct
+import time
+import ctypes
+
+ctypes.windll.shcore.SetProcessDpiAwareness(1)  # DPI認識を有効化
+
+# サーバーのホストとポート
+PORT = 5000
 
 # アプリケーションタイトル
 APP_TITLE = "Projector App"
@@ -26,6 +39,40 @@ def get_quality_names():
 # 状態
 connected = False
 
+# 画面キャプチャと送信を行う関数
+def disp(client,width:int,height:int):
+    global connected
+    try:
+        while connected:
+            # フレームのキャプチャ
+            monitor = mss().monitors[1]  # プライマリモニターを選択
+            frame = mss().grab(monitor) # 画面全体をキャプチャ
+            frame = cv2.cvtColor(np.array(frame), cv2.COLOR_BGRA2BGR)
+            frame = cv2.resize(frame, (height, width))   # 解像度をheightxwidthにリサイズ
+
+            frame = cv2.flip(frame, 0)  # 垂直反転
+            # frame = cv2.convertScaleAbs(frame, alpha=1.5, beta=10)  # 明るさ調整
+
+            # フレームのエンコード
+            _, buffer = cv2.imencode('.jpg', frame,[cv2.IMWRITE_JPEG_QUALITY, 30])
+            data = buffer.tobytes()
+            
+            # データの送信
+            size = len(data) # フレームサイズ
+            client.sendall(struct.pack(">I", size))  # フレームサイズを送信
+            client.sendall(data)  # フレームデータを送信
+            time.sleep(0.1)  # 約30fpsで送信
+    
+    except Exception as e:
+        messagebox.showerror(APP_TITLE, f"接続が切断されました。\nエラー: {e}")
+        button.config(text="接続")
+        combox.config(state="readonly")  # コンボボックスを有効化
+        connected = False # 接続状態を更新
+        
+    finally:
+        # クライアントソケットのクローズ
+        client.close()
+
 # ボタンクリック時の処理
 def on_button_click():
     # グローバル変数の使用宣言
@@ -45,12 +92,25 @@ def on_button_click():
         return
     # 選択された画質オプションの取得
     selected_option = combox.current()
+    # クライアントソケットの作成
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # クライアントへの接続
+    HOST = input
+    try:
+        client.connect((HOST, PORT))
+    except Exception as e:
+        messagebox.showerror(APP_TITLE, f"接続に失敗しました。\nエラー: {e}")
+        return
+    # 画面キャプチャと送信を行うスレッドの開始
+    width = IMAGE_QUALITIES[selected_option]["width"]
+    height = IMAGE_QUALITIES[selected_option]["height"]
+    connected = True # 接続状態を更新
+    threading.Thread(target=disp, args=(client,width,height), daemon=True).start()
     # ボタンのテキストを「切断」に変更
     button.config(text="切断")
     # 情報メッセージの表示
     messagebox.showinfo(APP_TITLE, "接続しました。")
     combox.config(state="disabled")  # コンボボックスを無効化
-    connected = True # 接続状態を更新
 
 # ウィンドウ終了時の処理
 def on_exit():
@@ -62,7 +122,7 @@ app = tk.Tk()
 # ウィンドウの設定
 app.title(APP_TITLE)
 # ウィンドウサイズの固定
-app.geometry("250x70")
+app.geometry("370x90")
 # リサイズ不可
 app.resizable(False, False)
 
