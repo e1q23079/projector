@@ -61,7 +61,7 @@ def disp(client,width:int,height:int):
             size = len(data) # フレームサイズ
             client.sendall(struct.pack(">I", size))  # フレームサイズを送信
             client.sendall(data)  # フレームデータを送信
-            time.sleep(0.1)  # 約30fpsで送信
+            time.sleep(0.03)  # 約30fpsで送信
     
     except Exception as e:
         messagebox.showerror(APP_TITLE, f"接続が切断されました。\nエラー: {e}")
