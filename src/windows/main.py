@@ -15,32 +15,36 @@ ctypes.windll.shcore.SetProcessDpiAwareness(1)  # DPI認識を有効化
 HOST = None
 PORT = 5000
 
+# デフォルトの画面解像度
+width = 1920
+height = 1080
+
 # アプリケーションタイトル
 APP_TITLE = "Projector App"
 
 # 画質オプションの定義
 IMAGE_QUALITIES = [
-    {"height":256,"width":144},
-    {"height":426,"width":240},
-    {"height":640,"width":360},
-    {"height":854,"width":480},
-    {"height":1280,"width":720},
-    {"height":1920,"width":1080}
+    {"width":256,"height":144},
+    {"width":426,"height":240},
+    {"width":640,"height":360},
+    {"width":854,"height":480},
+    {"width":1280,"height":720},
+    {"width":1920,"height":1080}
 ]
 
 # 画質名を取得
 def get_quality_names():
     names = []
     for image_quality in IMAGE_QUALITIES:
-        names.append(f"{image_quality['width']}p ({image_quality['width']}x{image_quality['height']})")
+        names.append(f"{image_quality['height']}p ({image_quality['width']}x{image_quality['height']})")
     return names
 
 # 状態
 connected = False
 
 # 画面キャプチャと送信を行う関数
-def disp(client,width:int,height:int):
-    global connected
+def disp(client):
+    global connected,height,width
     try:
         while connected:
             # フレームのキャプチャ
@@ -48,7 +52,7 @@ def disp(client,width:int,height:int):
                 monitor = sct.monitors[1]  # プライマリモニターを選択
                 frame = sct.grab(monitor) # 画面全体をキャプチャ
             frame = cv2.cvtColor(np.array(frame), cv2.COLOR_BGRA2BGR) # BGRAからBGRに変換
-            frame = cv2.resize(frame, (height, width))   # 解像度をheightxwidthにリサイズ
+            frame = cv2.resize(frame, (width, height))   # 解像度をwidthxheightにリサイズ
 
             frame = cv2.flip(frame, 0)  # 垂直反転
             # frame = cv2.convertScaleAbs(frame, alpha=1.5, beta=10)  # 明るさ調整
@@ -95,7 +99,7 @@ def switch_disconnection(mes=True):
 # ボタンクリック時の処理
 def on_button_click():
     # グローバル変数の使用宣言
-    global connected,HOST
+    global connected,HOST,height,width
     # HOSTが未設定の場合、設定ダイアログを表示
     if not HOST:
         messagebox.showwarning(APP_TITLE, "接続先が設定されていません。")
@@ -115,10 +119,10 @@ def on_button_click():
         messagebox.showerror(APP_TITLE, f"接続に失敗しました。\nエラー: {e}")
         return
     # 画面キャプチャと送信を行うスレッドの開始
-    width = IMAGE_QUALITIES[selected_option]["width"]
     height = IMAGE_QUALITIES[selected_option]["height"]
+    width = IMAGE_QUALITIES[selected_option]["width"]
     switch_connection() # 接続状態に切り替え
-    threading.Thread(target=disp, args=(client,width,height), daemon=True).start()
+    threading.Thread(target=disp, args=(client,), daemon=True).start()
 
 # ウィンドウ終了時の処理
 def on_exit():
