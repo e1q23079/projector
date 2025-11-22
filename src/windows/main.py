@@ -22,6 +22,9 @@ height = 1080
 # 拡大・縮小倍率
 zoom_factor = 1.0
 
+# 倍率調整率
+zoom_step = 0.1
+
 # 垂直反転
 flip_vertical = True
 
@@ -154,13 +157,13 @@ def on_setting():
 
 # 拡大
 def on_zoom_in():
-    global zoom_factor
-    zoom_factor = min(1, zoom_factor + 0.1)
+    global zoom_factor,zoom_step
+    zoom_factor = min(1, zoom_factor + zoom_step)
 
 # 縮小
 def on_zoom_out():
-    global zoom_factor
-    zoom_factor = max(0.1, zoom_factor - 0.1)
+    global zoom_factor,zoom_step
+    zoom_factor = max(0.1, zoom_factor - zoom_step)
 
 # 倍率リセット
 def on_zoom_reset():
