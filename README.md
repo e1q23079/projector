@@ -6,7 +6,7 @@
 
 ### Windows（送信側）
 
-1. 仮想環境を作成して有効化（PowerShell）:
+1. 仮想環境を作成して有効化:
 
     ```powershell
     python -m venv .venv
