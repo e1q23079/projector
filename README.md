@@ -6,20 +6,20 @@
 
 ### Windows（送信側）
 
-1. 仮想環境を作成して有効化:
+1. 仮想環境を作成して有効化
 
     ```powershell
     python -m venv .venv
     .\.venv\Scripts\Activate
     ```
 
-2. 依存関係をインストール:
+2. 依存関係をインストール
 
     ```powershell
     pip install -r requirements.txt
     ```
 
-3. アプリを起動:
+3. アプリを起動
 
     ```powershell
     python src/windows/main.py
@@ -29,7 +29,7 @@
 
 ### Android / Kivy（受信側）
 
-- 開発中に PC 上で動かす場合（Kivy がインストール済みの環境）:
+- 開発中に PC 上で動かす場合（Kivy がインストール済みの環境）
 
     ```bash
     cd src/android
