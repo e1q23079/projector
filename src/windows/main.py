@@ -19,6 +19,9 @@ PORT = 5000
 width = 1920
 height = 1080
 
+# 拡大・縮小倍率
+zoom_factor = 1.0
+
 # アプリケーションタイトル
 APP_TITLE = "Projector App"
 
@@ -44,7 +47,7 @@ connected = False
 
 # 画面キャプチャと送信を行う関数
 def disp(client):
-    global connected,height,width
+    global connected,height,width,zoom_factor
     try:
         while connected:
             # フレームのキャプチャ
@@ -56,6 +59,10 @@ def disp(client):
 
             frame = cv2.flip(frame, 0)  # 垂直反転
             # frame = cv2.convertScaleAbs(frame, alpha=1.5, beta=10)  # 明るさ調整
+
+            # 拡大・縮小処理
+            if zoom_factor != 1.0:
+                frame = cv2.resize(frame, None, fx=zoom_factor, fy=zoom_factor)
 
             # フレームのエンコード
             _, buffer = cv2.imencode('.jpg', frame,[cv2.IMWRITE_JPEG_QUALITY, 30])
@@ -141,6 +148,21 @@ def on_setting():
     HOST = input
     status_bar.config(text=f"接続先：{HOST}")
 
+# 拡大
+def on_zoom_in():
+    global zoom_factor
+    zoom_factor = min(1, zoom_factor + 0.1)
+
+# 縮小
+def on_zoom_out():
+    global zoom_factor
+    zoom_factor = max(0.1, zoom_factor - 0.1)
+
+# 倍率リセット
+def on_zoom_reset():
+    global zoom_factor
+    zoom_factor = 1.0
+
 app = tk.Tk()
 # ウィンドウの設定
 app.title(APP_TITLE)
@@ -155,9 +177,16 @@ app.config(menu=menubar)
 
 # メニュー
 menu = tk.Menu(menubar, tearoff=0)
+
 menubar.add_cascade(label="メニュー", menu=menu)
 menu.add_command(label="設定", command=on_setting)
 menu.add_command(label="終了", command=on_exit)
+
+zoom = tk.Menu(menubar, tearoff=False)
+menubar.add_cascade(label="ズーム", menu=zoom)
+zoom.add_command(label="縮小 (-)", command=on_zoom_out)
+zoom.add_command(label="拡大 (+)", command=on_zoom_in)
+zoom.add_command(label="リセット", command=on_zoom_reset)
 
 # コンボボックスの作成
 combox = ttk.Combobox(app, values=get_quality_names(),state="readonly")
