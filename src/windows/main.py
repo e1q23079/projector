@@ -1,21 +1,19 @@
-import tkinter as tk
-from tkinter import ttk
-from tkinter import simpledialog
-from tkinter import messagebox
-import threading
-import socket
-import cv2
 from mss import mss
-import numpy as np
-import struct
-import time
+from tkinter import ttk,simpledialog,messagebox
 import ctypes
+import cv2
+import numpy as np
+import socket
+import struct
+import threading
+import time
+import tkinter as tk
 
 ctypes.windll.shcore.SetProcessDpiAwareness(1)  # DPI認識を有効化
 
 # サーバーのホストとポート
-PORT = 5000
 HOST = None
+PORT = 5000
 
 # アプリケーションタイトル
 APP_TITLE = "Projector App"
@@ -49,7 +47,7 @@ def disp(client,width:int,height:int):
             with mss() as sct:
                 monitor = sct.monitors[1]  # プライマリモニターを選択
                 frame = sct.grab(monitor) # 画面全体をキャプチャ
-            frame = cv2.cvtColor(np.array(frame), cv2.COLOR_BGRA2BGR)
+            frame = cv2.cvtColor(np.array(frame), cv2.COLOR_BGRA2BGR) # BGRAからBGRに変換
             frame = cv2.resize(frame, (height, width))   # 解像度をheightxwidthにリサイズ
 
             frame = cv2.flip(frame, 0)  # 垂直反転
@@ -66,14 +64,33 @@ def disp(client,width:int,height:int):
             time.sleep(0.03)  # 約30fpsで送信
     
     except Exception as e:
+        switch_disconnection(mes=False)
         messagebox.showerror(APP_TITLE, f"接続が切断されました。\nエラー: {e}")
-        button.config(text="接続")
-        combox.config(state="readonly")  # コンボボックスを有効化
-        connected = False # 接続状態を更新
         
     finally:
         # クライアントソケットのクローズ
         client.close()
+
+# 接続状態に切り替え
+def switch_connection():
+    global connected
+    connected = True # 接続状態を更新
+    # ボタンのテキストを「切断」に変更
+    button.config(text="切断")
+    combox.config(state="disabled")  # コンボボックスを無効化
+    # 情報メッセージの表示
+    messagebox.showinfo(APP_TITLE, "接続しました。")
+
+# 切断状態に切り替え
+def switch_disconnection(mes=True):
+    global connected
+    connected = False # 接続状態を更新
+    # ボタンのテキストを「接続」に変更
+    button.config(text="接続")
+    combox.config(state="readonly")  # コンボボックスを有効化
+    # 情報メッセージの表示
+    if mes:
+        messagebox.showinfo(APP_TITLE, "切断しました。")
 
 # ボタンクリック時の処理
 def on_button_click():
@@ -86,10 +103,7 @@ def on_button_click():
     # 接続中の場合
     if connected:
         # 切断処理
-        connected = False # 接続状態を更新
-        button.config(text="接続")
-        messagebox.showinfo(APP_TITLE, "切断しました。")
-        combox.config(state="readonly")  # コンボボックスを有効化
+        switch_disconnection()  # 切断状態に切り替え
         return
     # 選択された画質オプションの取得
     selected_option = combox.current()
@@ -103,13 +117,8 @@ def on_button_click():
     # 画面キャプチャと送信を行うスレッドの開始
     width = IMAGE_QUALITIES[selected_option]["width"]
     height = IMAGE_QUALITIES[selected_option]["height"]
-    connected = True # 接続状態を更新
+    switch_connection() # 接続状態に切り替え
     threading.Thread(target=disp, args=(client,width,height), daemon=True).start()
-    # ボタンのテキストを「切断」に変更
-    button.config(text="切断")
-    # 情報メッセージの表示
-    messagebox.showinfo(APP_TITLE, "接続しました。")
-    combox.config(state="disabled")  # コンボボックスを無効化
 
 # ウィンドウ終了時の処理
 def on_exit():
@@ -145,7 +154,6 @@ menu = tk.Menu(menubar, tearoff=0)
 menubar.add_cascade(label="メニュー", menu=menu)
 menu.add_command(label="設定", command=on_setting)
 menu.add_command(label="終了", command=on_exit)
-
 
 # コンボボックスの作成
 combox = ttk.Combobox(app, values=get_quality_names(),state="readonly")
