@@ -15,6 +15,7 @@ ctypes.windll.shcore.SetProcessDpiAwareness(1)  # DPI認識を有効化
 
 # サーバーのホストとポート
 PORT = 5000
+HOST = None
 
 # アプリケーションタイトル
 APP_TITLE = "Projector App"
@@ -77,26 +78,23 @@ def disp(client,width:int,height:int):
 # ボタンクリック時の処理
 def on_button_click():
     # グローバル変数の使用宣言
-    global connected
+    global connected,HOST
+    # HOSTが未設定の場合、設定ダイアログを表示
+    if not HOST:
+        messagebox.showwarning(APP_TITLE, "接続先が設定されていません。")
+        return
     # 接続中の場合
     if connected:
         # 切断処理
+        connected = False # 接続状態を更新
         button.config(text="接続")
         messagebox.showinfo(APP_TITLE, "切断しました。")
-        connected = False # 接続状態を更新
         combox.config(state="readonly")  # コンボボックスを有効化
-        return
-    # 接続先IPアドレスの入力ダイアログ表示
-    input = simpledialog.askstring(APP_TITLE, "接続先のデバイスのIPアドレスを入力してください。")
-    # 入力がキャンセルされた場合は処理を中止
-    if not input:
         return
     # 選択された画質オプションの取得
     selected_option = combox.current()
     # クライアントソケットの作成
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    # クライアントへの接続
-    HOST = input
     try:
         client.connect((HOST, PORT))
     except Exception as e:
@@ -119,6 +117,16 @@ def on_exit():
     if ret:
         app.destroy()
 
+# 設定
+def on_setting():
+    global HOST
+    # 接続先IPアドレスの入力ダイアログ表示
+    input = simpledialog.askstring(APP_TITLE, "接続先のデバイスのIPアドレスを入力してください。")
+    # 入力がキャンセルされた場合は処理を中止
+    if not input:
+        return
+    HOST = input
+
 app = tk.Tk()
 # ウィンドウの設定
 app.title(APP_TITLE)
@@ -126,6 +134,17 @@ app.title(APP_TITLE)
 app.geometry("370x90")
 # リサイズ不可
 app.resizable(False, False)
+
+# メニューバー
+menubar = tk.Menu(app)
+app.config(menu=menubar)
+
+# メニュー
+menu = tk.Menu(menubar, tearoff=0)
+menubar.add_cascade(label="メニュー", menu=menu)
+menu.add_command(label="設定", command=on_setting)
+menu.add_command(label="終了", command=on_exit)
+
 
 # コンボボックスの作成
 combox = ttk.Combobox(app, values=get_quality_names(),state="readonly")
