@@ -126,12 +126,13 @@ def on_setting():
     if not input:
         return
     HOST = input
+    status_bar.config(text=f"接続先：{HOST}")
 
 app = tk.Tk()
 # ウィンドウの設定
 app.title(APP_TITLE)
 # ウィンドウサイズの固定
-app.geometry("370x90")
+app.geometry("370x125")
 # リサイズ不可
 app.resizable(False, False)
 
@@ -154,6 +155,10 @@ combox.pack(pady=5)
 # ボタンの作成
 button = ttk.Button(app, text="接続",width=10,command=on_button_click)
 button.pack(pady=5)
+
+# ステータスバー
+status_bar = ttk.Label(app, text="接続先：未設定", relief=tk.SUNKEN, anchor=tk.W)
+status_bar.pack(side=tk.BOTTOM, fill=tk.X)
 
 # ウィンドウ終了時のイベントバインド
 app.protocol("WM_DELETE_WINDOW", on_exit)
