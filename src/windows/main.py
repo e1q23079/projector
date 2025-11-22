@@ -184,8 +184,8 @@ menu.add_command(label="終了", command=on_exit)
 
 zoom = tk.Menu(menubar, tearoff=False)
 menubar.add_cascade(label="ズーム", menu=zoom)
-zoom.add_command(label="縮小 (-)", command=on_zoom_out)
-zoom.add_command(label="拡大 (+)", command=on_zoom_in)
+zoom.add_command(label="ズームアウト", command=on_zoom_out)
+zoom.add_command(label="ズームイン", command=on_zoom_in)
 zoom.add_command(label="リセット", command=on_zoom_reset)
 
 # コンボボックスの作成
