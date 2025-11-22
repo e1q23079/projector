@@ -54,6 +54,7 @@ connected = False
 # 画面キャプチャと送信を行う関数
 def disp(client):
     global connected,height,width,zoom_factor,flip_vertical
+    connected = True
     try:
         while connected:
             # フレームのキャプチャ
@@ -135,8 +136,8 @@ def on_button_click():
     # 画面キャプチャと送信を行うスレッドの開始
     height = IMAGE_QUALITIES[selected_option]["height"]
     width = IMAGE_QUALITIES[selected_option]["width"]
-    switch_connection() # 接続状態に切り替え
     threading.Thread(target=disp, args=(client,), daemon=True).start()
+    switch_connection() # 接続状態に切り替え
 
 # ウィンドウ終了時の処理
 def on_exit():
