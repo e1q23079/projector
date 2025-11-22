@@ -23,7 +23,7 @@ height = 1080
 zoom_factor = 1.0
 
 # 倍率調整率
-zoom_step = 0.1
+zoom_step = 0.01
 
 # 垂直反転
 flip_vertical = True
