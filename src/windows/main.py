@@ -700,7 +700,7 @@ def on_zoom_reset():
 
 # バージョン情報
 def on_about():
-    messagebox.showinfo(APP_TITLE, "Projector App\nバージョン 1.0")
+    messagebox.showinfo(APP_TITLE, "Projector App\nバージョン 1.0.0")
 
 # 垂直反転切り替え
 def on_flip_vertical():
