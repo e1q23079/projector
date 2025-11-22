@@ -159,7 +159,7 @@ def on_setting():
 # 拡大
 def on_zoom_in():
     global zoom_factor,zoom_step
-    zoom_factor = min(1, zoom_factor + zoom_step)
+    zoom_factor = min(2, zoom_factor + zoom_step)
 
 # 縮小
 def on_zoom_out():
