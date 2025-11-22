@@ -163,6 +163,10 @@ def on_zoom_reset():
     global zoom_factor
     zoom_factor = 1.0
 
+# バージョン情報
+def on_about():
+    messagebox.showinfo(APP_TITLE, "Projector App\nバージョン 1.0")
+
 app = tk.Tk()
 # ウィンドウの設定
 app.title(APP_TITLE)
@@ -187,6 +191,10 @@ menubar.add_cascade(label="ズーム", menu=zoom)
 zoom.add_command(label="ズームアウト", command=on_zoom_out)
 zoom.add_command(label="ズームイン", command=on_zoom_in)
 zoom.add_command(label="リセット", command=on_zoom_reset)
+
+help_menu = tk.Menu(menubar, tearoff=False)
+menubar.add_cascade(label="ヘルプ", menu=help_menu)
+help_menu.add_command(label="バージョン情報", command=on_about)
 
 # コンボボックスの作成
 combox = ttk.Combobox(app, values=get_quality_names(),state="readonly")
