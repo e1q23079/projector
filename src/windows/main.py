@@ -22,6 +22,9 @@ height = 1080
 # 拡大・縮小倍率
 zoom_factor = 1.0
 
+# 垂直反転
+flip_vertical = True
+
 # アプリケーションタイトル
 APP_TITLE = "Projector App"
 
@@ -47,7 +50,7 @@ connected = False
 
 # 画面キャプチャと送信を行う関数
 def disp(client):
-    global connected,height,width,zoom_factor
+    global connected,height,width,zoom_factor,flip_vertical
     try:
         while connected:
             # フレームのキャプチャ
@@ -57,7 +60,8 @@ def disp(client):
             frame = cv2.cvtColor(np.array(frame), cv2.COLOR_BGRA2BGR) # BGRAからBGRに変換
             frame = cv2.resize(frame, (width, height))   # 解像度をwidthxheightにリサイズ
 
-            frame = cv2.flip(frame, 0)  # 垂直反転
+            if flip_vertical:
+                frame = cv2.flip(frame, 0)  # 垂直反転
             # frame = cv2.convertScaleAbs(frame, alpha=1.5, beta=10)  # 明るさ調整
 
             # 拡大・縮小処理
@@ -167,6 +171,11 @@ def on_zoom_reset():
 def on_about():
     messagebox.showinfo(APP_TITLE, "Projector App\nバージョン 1.0")
 
+# 垂直反転切り替え
+def on_flip_vertical():
+    global flip_vertical
+    flip_vertical = not flip_vertical
+
 app = tk.Tk()
 # ウィンドウの設定
 app.title(APP_TITLE)
@@ -183,7 +192,8 @@ app.config(menu=menubar)
 menu = tk.Menu(menubar, tearoff=0)
 
 menubar.add_cascade(label="メニュー", menu=menu)
-menu.add_command(label="設定", command=on_setting)
+menu.add_command(label="接続先設定", command=on_setting)
+menu.add_command(label="垂直反転切替", command=on_flip_vertical)
 menu.add_command(label="終了", command=on_exit)
 
 zoom = tk.Menu(menubar, tearoff=False)
