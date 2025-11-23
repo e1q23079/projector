@@ -707,6 +707,15 @@ def on_flip_vertical():
     global flip_vertical
     flip_vertical = not flip_vertical
 
+# キー押下イベント処理
+def press_key(event):
+    if event.keysym == 'Up':      # 上矢印キーでズームイン
+        on_zoom_in()
+    elif event.keysym == 'Down':  # 下矢印キーでズームアウト
+        on_zoom_out()
+    elif event.keysym == 'Escape':  # Escキーで倍率リセット
+        on_zoom_reset()
+
 # メインプログラム
 if __name__ == "__main__":
 
@@ -758,6 +767,9 @@ if __name__ == "__main__":
 
     # ウィンドウ終了時のイベントバインド
     app.protocol("WM_DELETE_WINDOW", on_exit)
+
+    # キー押下イベントのバインド
+    app.bind('<KeyPress>',press_key)
 
     # メインループの開始
     app.mainloop()
