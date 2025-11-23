@@ -707,54 +707,57 @@ def on_flip_vertical():
     global flip_vertical
     flip_vertical = not flip_vertical
 
-app = tk.Tk()
-# ウィンドウの設定
-app.title(APP_TITLE)
-# アイコン
-icon = tk.PhotoImage(data=ICON_DATA)
-app.iconphoto(True, icon)
-# ウィンドウサイズの固定
-app.geometry("370x125")
-# リサイズ不可
-app.resizable(False, False)
+# メインプログラム
+if __name__ == "__main__":
 
-# メニューバー
-menubar = tk.Menu(app)
-app.config(menu=menubar)
+    app = tk.Tk()
+    # ウィンドウの設定
+    app.title(APP_TITLE)
+    # アイコン
+    icon = tk.PhotoImage(data=ICON_DATA)
+    app.iconphoto(True, icon)
+    # ウィンドウサイズの固定
+    app.geometry("370x125")
+    # リサイズ不可
+    app.resizable(False, False)
 
-# メニュー
-menu = tk.Menu(menubar, tearoff=0)
+    # メニューバー
+    menubar = tk.Menu(app)
+    app.config(menu=menubar)
 
-menubar.add_cascade(label="メニュー", menu=menu)
-menu.add_command(label="接続先設定", command=on_setting)
-menu.add_command(label="垂直反転切替", command=on_flip_vertical)
-menu.add_command(label="終了", command=on_exit)
+    # メニュー
+    menu = tk.Menu(menubar, tearoff=0)
 
-zoom = tk.Menu(menubar, tearoff=False)
-menubar.add_cascade(label="ズーム", menu=zoom)
-zoom.add_command(label="ズームアウト", command=on_zoom_out)
-zoom.add_command(label="ズームイン", command=on_zoom_in)
-zoom.add_command(label="リセット", command=on_zoom_reset)
+    menubar.add_cascade(label="メニュー", menu=menu)
+    menu.add_command(label="接続先設定", command=on_setting)
+    menu.add_command(label="垂直反転切替", command=on_flip_vertical)
+    menu.add_command(label="終了", command=on_exit)
 
-help_menu = tk.Menu(menubar, tearoff=False)
-menubar.add_cascade(label="ヘルプ", menu=help_menu)
-help_menu.add_command(label="バージョン情報", command=on_about)
+    zoom = tk.Menu(menubar, tearoff=False)
+    menubar.add_cascade(label="ズーム", menu=zoom)
+    zoom.add_command(label="ズームアウト", command=on_zoom_out)
+    zoom.add_command(label="ズームイン", command=on_zoom_in)
+    zoom.add_command(label="リセット", command=on_zoom_reset)
 
-# コンボボックスの作成
-combox = ttk.Combobox(app, values=get_quality_names(),state="readonly")
-combox.current(5) # デフォルト選択を1080pに設定
-combox.pack(pady=5)
+    help_menu = tk.Menu(menubar, tearoff=False)
+    menubar.add_cascade(label="ヘルプ", menu=help_menu)
+    help_menu.add_command(label="バージョン情報", command=on_about)
 
-# ボタンの作成
-button = ttk.Button(app, text="接続",width=10,command=on_button_click)
-button.pack(pady=5)
+    # コンボボックスの作成
+    combox = ttk.Combobox(app, values=get_quality_names(),state="readonly")
+    combox.current(5) # デフォルト選択を1080pに設定
+    combox.pack(pady=5)
 
-# ステータスバー
-status_bar = ttk.Label(app, text="接続先：未設定", relief=tk.SUNKEN, anchor=tk.W)
-status_bar.pack(side=tk.BOTTOM, fill=tk.X)
+    # ボタンの作成
+    button = ttk.Button(app, text="接続",width=10,command=on_button_click)
+    button.pack(pady=5)
 
-# ウィンドウ終了時のイベントバインド
-app.protocol("WM_DELETE_WINDOW", on_exit)
+    # ステータスバー
+    status_bar = ttk.Label(app, text="接続先：未設定", relief=tk.SUNKEN, anchor=tk.W)
+    status_bar.pack(side=tk.BOTTOM, fill=tk.X)
 
-# メインループの開始
-app.mainloop()
+    # ウィンドウ終了時のイベントバインド
+    app.protocol("WM_DELETE_WINDOW", on_exit)
+
+    # メインループの開始
+    app.mainloop()
